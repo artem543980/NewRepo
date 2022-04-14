@@ -1,0 +1,179 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+struct elem
+{
+	char value; // информационное поле стека
+	elem* next = nullptr; // адресное поле стека
+};
+//Добавление элемента в стек
+void push(elem*& stack, char value);
+//Удаление элемента из стека с возвратом хранимого значения
+bool pop(elem*& stack, char& value);
+//Возврат значения с вершины стека, без удаления самого элемента
+char* peek(elem* stack);
+//Удаление всего стека
+void clear(elem*& stack);
+
+/*void fillBrack(elem*& stack, string str)
+{
+	for (int i = str.size() - 1; i >= 0; i--)
+	{
+		if (str[i] == '(' || str[i] == '{' || str[i] == '[' || str[i] == '<') push(stack, str[i]);
+	}
+}*/
+
+int fillStackSequence(elem*& stack, string str)
+{
+	/*
+	cout << int('(') << " " << int(')') << " " << int('[') << " " << int(']') << " " << int('{') << " " << int('}') << " " << int('<') << " " << int('>') << endl;
+	int** brackets = new int* [8];
+	for (int i = 0; i < 8; i++) {
+		brackets[i] = new int[2];
+	}
+	for (int i = 0 ; i < 0; i++)
+	*/
+	int k = 0, countOp = 0, countCl = 0;
+	char br;
+
+	for (int i = 0; i < str.size(); i++)
+	{
+		if (str[i] == '[' || str[i] == ']' || str[i] == '<' || str[i] == '>' || str[i] == '(' || str[i] == ')' || str[i] == '{' || str[i] == '}') {
+			if (str[i] == '}') {
+				countCl++;
+				if (stack && (*peek(stack) == '{')) {
+					pop(stack, *peek(stack));
+				}
+				else {
+					cout << "Trouble!!! You have wrong closed bracket " << str[i] << " in " << i + 1 << " place!" << endl;
+					pop(stack, *peek(stack));
+				}
+			}
+			else if (str[i] == '>') {
+				countCl++;
+				if (stack && (*peek(stack) == '<')) {
+					pop(stack, *peek(stack));
+				}
+				else {
+					cout << "Trouble!!! You have wrong closed bracket " << str[i] << " in " << i + 1 << " place!" << endl;
+					pop(stack, *peek(stack));
+				}
+			}
+			else if (str[i] == ')') {
+				countCl++;
+				if (stack && (*peek(stack) == '(')) {
+					pop(stack, *peek(stack));
+				}
+				else {
+					cout << "Trouble!!! You have wrong closed bracket " << str[i] << " in " << i + 1 << " place!" << endl;
+					pop(stack, *peek(stack));
+				}
+			}
+			else if (str[i] == ']') {
+				countCl++;
+				if (stack && (*peek(stack) == '[')) {
+					pop(stack, *peek(stack));
+				}
+				else {
+					cout << "Trouble!!! You have wrong closed bracket " << str[i] << " in " << i + 1 << " place!" << endl;
+					pop(stack, *peek(stack));
+				}
+			}
+			else if (str[i] == '(' || str[i] == '{' || str[i] == '[' || str[i] == '<')
+			{
+				push(stack, str[i]);
+				countOp++; 
+				k = i;
+			}
+		}
+	}
+	if (countCl < countOp) cout << "Trouble!!! You have wrong open bracket " << stack->value << " in " << k + 1 << " place!" << endl;
+	return k;
+}
+
+
+void Exercise(elem*& stack)
+{
+	string str = "";
+	cin >> str;
+	// {(){[<>]}}
+	// [((3+7}(<)>*20)>
+	cout << str.size() << endl;
+	//fillBrack(stack, str);
+	int f = fillStackSequence(stack, str);
+	if (!f) {
+		cout << "You have the right position for brackets" << endl;
+	}
+}
+//Функуия заполнения стека подряд идущими натуральными числами
+
+//Функция вывода содержимого стека на экран
+void showStack(elem*& stack)
+{
+	while (stack)
+	{
+		char val;
+		if (pop(stack, val)) //Если элемент из стека получен, выводим на экран
+		{
+			cout << val << ((stack) ? " " : "\n");
+		}
+	}
+}
+
+void push(elem*& stack, char value)
+{
+	//Создание нового элемента для размещения в стеке
+	elem* newel = new elem;
+	newel->value = value;
+	//Проверка пустоты стека
+	if (!stack)
+	{
+		//Новый элемент будет первым
+		stack = newel;
+	}
+	else
+	{
+		//Стек уже существует. Новый элемент размещается на вершине
+		newel->next = stack;
+		stack = newel;
+	}
+}
+
+char* peek(elem* stack)
+{
+	//Получаем значение с вершины стека, если он не пуст без удаления самого элемента
+	if (!stack) return nullptr;
+	return &stack->value;
+}
+
+bool pop(elem*& stack, char& value)
+{
+	//Извлекаем элемент из стека, если он не пуст
+	if (!stack) return false; //Признак того, что значение не возвращено
+	elem* rem = stack;//Сохраняем ссылку на вершину
+	value = stack->value;//И значение, хранимое в верхнем элементе
+	stack = stack->next;//Смещаем указатель на новую вершину
+	delete rem;
+	return true;//Признак успешности получения значения с вершины стека
+}
+void clear(elem*& stack)
+{
+	while (stack)//Удаляем все элементы стека
+	{
+		elem* rem = stack;
+		stack = stack->next;
+		delete rem;
+	}
+}
+
+void main()
+{
+
+	elem* stack = nullptr;
+	Exercise(stack);
+	//showStack(stack);
+	clear(stack); //В данном примере функцию можно не использовать, поскольку стек 
+	//очищается после отображения на экране
+	system("pause");
+}
